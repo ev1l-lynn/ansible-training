@@ -7,6 +7,9 @@
     - name: Just a task
       ansible.builtin.debug:
         msg: Just a task
+      tags:
+        - production
+        - testing
 
     - name: Import the dummy task list
       ansible.builtin.import_tasks: tasks/dummy.yml

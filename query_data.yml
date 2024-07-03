@@ -1,0 +1,49 @@
+---
+- name: Query data structurs
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    data_structure:
+      'one':
+        - id: 1
+          name: Data 1
+          tag: a1
+        - id: 2
+          name: Data 2
+          tag: a2
+        - id: 3
+          name: Data 3
+          tag: a1
+      'two':
+        - id: 1
+          name: Data 1_2
+          tag:
+            - a1
+        - id: 2
+          name: Data 2_2
+          tag:
+            - a2
+        - id: 3
+          name: Data 3_2
+          tag:
+            - a1
+            - a100
+
+  tasks:
+    - name: Query a data structur step by step - step 1
+      ansible.builtin.debug:
+        var: data_structure['one']
+
+    - name: Query a data structure step by step - step 2
+      ansible.builtin.debug:
+        var: data_structure['one'] | selectattr('tag', '==', 'a1')
+
+    - name: Query a data structure step by step - step 3
+      ansible.builtin.debug:
+        var: data_structure['one'] | selectattr('tag', '==', 'a1') | map(attribute='name')
+
+    - name: Generate a list with tags
+      ansible.builtin.debug:
+        var: data_structure['two'] | subelements('tag')

@@ -1,0 +1,27 @@
+---
+- name: Play with block
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: A dummy task
+      ansible.builtin.debug:
+
+    - name: Some tasks
+      block:
+        - name: Do something
+          ansible.builtin.command: id
+        - name: Do something wrong
+          ansible.builtin.command: /bin/false
+        - name: Never reached
+          ansible.builtin.command: date
+      rescue:
+        - name: Fallback task
+          ansible.builtin.command: wc /etc/services
+      always:
+        - name: Run every time
+          ansible.builtin.debug:
+
+    - name: A dummy task
+      ansible.builtin.debug:

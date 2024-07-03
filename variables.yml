@@ -1,0 +1,109 @@
+---
+- name: Examples with variables
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    empty_var:
+    int_var: 42
+    string_var: "Hallo"
+    bool_var: false
+
+  tasks:
+
+# Defined and undefined variables
+
+    - name: Print undefined variable with msg
+      ansible.builtin.debug:
+        msg: "Here is the undefined variable: {{ undefined_var }}"
+      ignore_errors: true
+
+    - name: Print undefined variable with default
+      ansible.builtin.debug:
+        msg: "Here is the undefined variable with a default value: {{ undefined_var | default('hello world') }}"
+
+    - name: Print empty variable
+      ansible.builtin.debug:
+        msg: "Here ist the empty_var: {{ empty_var }}"
+
+    - name: Print empty variable with default value
+      ansible.builtin.debug:
+        msg: "Here is the empty_var with default value: {{ empty_var | default('hello world') }}"
+
+    - name: Print empty variable with default value and use default with empty var set to true
+      ansible.builtin.debug:
+        msg: "Here is the empty_var with default value: {{ empty_var | default('hello world', true) }}"
+
+# Play with datatypes
+    - name: Print the datatype
+      ansible.builtin.debug:
+        msg: "String should be the datatype of {{ string_var | type_debug }}"
+
+    - name: Cast the string_var to datatype bool
+      ansible.builtin.debug:
+        msg: "Cast the string_var to bool: {{ string_var | bool }}"
+
+    - name: Cast the int_var to datatype int
+      ansible.builtin.debug:
+        msg: "Cast the int_var to bool: {{ int_var | bool }}"
+
+    - name: Calculate with int_var as string
+      vars:
+        int_var: "42"
+      ansible.builtin.debug:
+        msg: "int_var as string multiply with 10 equals: {{ int_var * 10 }}"
+
+
+    - name: Calculate with int_var
+      ansible.builtin.debug:
+        msg: "int_var multiply with 10 equals: {{ int_var * 10 }}"
+
+    - name: Calculate with int_var as string
+      vars:
+        int_var: "42"
+      ansible.builtin.debug:
+        msg: "int_var multiply with 10 equals: {{ (int_var|int) * 10 }}"
+
+# Example with map
+    - name: Map a function to list
+      vars:
+        my_list: [1, 2]
+      ansible.builtin.debug:
+        var: my_list | string
+
+    - name: Map a function to the items of a list
+      vars:
+        my_list: [1, 2]
+      ansible.builtin.debug:
+        var: my_list | map('string')
+
+    - name: Extract specific value and turn it into a list
+      vars:
+        my_list:
+          - id: 1
+            tag: a1
+            name: Susi
+          - id: 2
+            tag: a1
+            name: Peter
+          - id: 3
+            tag: a2
+            name: Hans
+      ansible.builtin.debug:
+        var: my_list | map(attribute="name")
+
+    - name: Extract specific value and turn it into a list
+      vars:
+        my_list:
+          - id: 1
+            tag: a1
+            name: Susi
+          - id: 2
+            tag: a1
+            name: Peter
+          - id: 3
+            tag: a2
+            name: Hans
+      ansible.builtin.debug:
+        var: my_list | selectattr('tag', '==', 'a1') | map(attribute="name")

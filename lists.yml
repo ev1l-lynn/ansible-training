@@ -1,0 +1,121 @@
+---
+- name: Play with lists
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    int_list: [2, 4, 12, 4, 8, 6]
+
+  tasks:
+    - name: Print the sum of the list
+      ansible.builtin.debug:
+        msg: The sum from {{ int_list }} equals {{ int_list | sum }}
+
+    - name: Print the highest value
+      ansible.builtin.debug:
+        msg: The highest value from {{ int_list }} equals {{ int_list | max }}
+
+    - name: Print the lowest value
+      ansible.builtin.debug:
+        msg: The lowest value from {{ int_list }} equals {{ int_list | min }}
+
+    - name: Sort the list of int
+      ansible.builtin.debug:
+        msg: The sorted list of {{ int_list }} equals {{ int_list | sort }}
+
+    - name: Shuffle the list of int
+      ansible.builtin.debug:
+        msg: The shuffled list of {{ int_list }} equals {{ int_list | shuffle }}
+
+    - name: Print the list unique
+      ansible.builtin.debug:
+        msg: The unique list of {{ int_list }} equals {{ int_list | unique }}
+
+    - name: Combine two lists to one list
+      vars:
+        tmp_list: [100, 200, 300, 12]
+      ansible.builtin.debug:
+        msg: The combination of int_list and tmp_list equals {{ (int_list + tmp_list) | sort }}
+
+    - name: Combine two lists to one unique list
+      vars:
+        tmp_list: [100, 200, 300, 12]
+      ansible.builtin.debug:
+        msg: The combination of int_list and tmp_list equals {{ int_list | union(tmp_list) | sort }}
+
+    - name: Get the difference of int_list and tmp_list
+      vars:
+        tmp_list: [100, 200, 300, 12]
+      ansible.builtin.debug:
+        msg: The diffence of {{ int_list }} and {{ tmp_list }} equals {{ int_list | difference(tmp_list) | sort }}
+
+    - name: Intersect two lists to one list
+      vars:
+        tmp_list: [100, 2, 200, 300, 12]
+      ansible.builtin.debug:
+        msg: The intersection of int_list and tmp_ist equals {{ int_list | intersect(tmp_list) | sort }}
+
+    - name: Intersect two lists where one list has inner list
+      vars:
+        tmp_list: [100, 2, 200, 300, 12, [100, 2, 200, 300, 12, 500, 8]]
+      ansible.builtin.debug:
+        msg: The intersection of {{ int_list }} and {{ tmp_list }} equals {{ int_list | intersect(tmp_list | flatten) | sort }}
+
+# Play with dictionaries
+    - name: Combine two dictionaries
+      vars:
+        dict_one: { 'user_susi': 1000, 'user_peter': 1001 }
+        dict_two: { 'user_hans': 1000, 'user_peter': 1002 }
+      ansible.builtin.debug:
+        msg: Combination of {{ dict_one }} and {{ dict_two }} equals {{ dict_one | combine(dict_two) }}
+
+    - name: Convert dictionary to a list of items
+      vars:
+        dict_one: { 'user_susi': 1000, 'user_peter': 1001}
+      ansible.builtin.debug:
+        msg: Convert from dictionary {{ dict_one }} to a list equals {{ dict_one | dict2items }}
+
+    - name: Convert from list to a dictionaery
+      vars:
+        list_one: [{'mykey': 'user_susi', 'myvalue': 1000}, {'mykey': 'user_peter', 'myvalue': 1001}]
+      ansible.builtin.debug:
+        msg: Convert from list {{ list_one }} to dictionary equals {{ list_one | items2dict('mykey', 'myvalue') }}
+
+    - name: Create the hash value of a string
+      vars:
+        my_string: "Hello world"
+      ansible.builtin.debug:
+        msg: The hash value of {{ my_string }} equals {{ my_string | hash('sha1') }}
+
+    - name: Generate the password hash of a string
+      vars:
+        my_string: "123456"
+      ansible.builtin.debug:
+        msg: The password hash of {{ my_string }} equals {{ my_string | password_hash('sha512') }}
+
+    - name: Generate the base64 value of a string
+      vars:
+        my_string: "Hello world"
+      ansible.builtin.debug:
+        msg: The base64 value of {{ my_string }} equals {{ my_string | b64encode }}
+
+    - name: Generate the string of a base64 value
+      vars:
+        my_value: "SGVsbG8gd29ybGQ="
+      ansible.builtin.debug:
+        msg: The value of {{ my_value }} equals {{ my_value | b64decode }}
+
+    - name: Quote a string
+      vars:
+        my_string: Hello world
+      ansible.builtin.command: ls -l {{ my_string }} versus {{ my_string | quote }}
+      ignore_errors: true
+
+# Additional features:
+# - lower
+# - upper
+# - capitalize
+# - replace
+# - regex_search
+# - regex_replace
