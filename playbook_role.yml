@@ -1,0 +1,55 @@
+---
+- name: Deploy the web application
+  hosts: web
+  gather_facts: false
+  become: true
+
+  roles:
+    - name: webserver
+      vars:
+        webserver_content: Hallo vom playbook
+
+  post_tasks:
+    - name: The smoke test
+      ansible.builtin.uri:
+        url: http://10.0.1.1/index.html
+        return_content: true
+        status_code:
+          - 200
+      delegate_to: localhost
+      become: false
+
+  handlers:
+    - name: Dummy again
+      ansible.builtin.debug:
+        msg: Ich bin zusätzlich
+      listen:
+        - Dummy debug tasks
+
+  tasks:
+
+- name: Smoke test for web application
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: The smoke test
+      ansible.builtin.uri:
+        url: http://{{ item }}/index.html
+        return_content: true
+        status_code:
+          - 200
+      loop: "{{ groups['web'] }}"
+      register: web_out
+      # failed_when: "{{ 'Hallo' in web_out[0]['content'] }}"
+      ignore_errors: true
+
+    - name: Dummy
+      ansible.builtin.debug:
+        var: web_out
+
+    - name: Check return content
+      ansible.builtin.fail:
+        msg: Content wrong
+      loop: "{{ web_out['results'] }}"
+      failed_when: "'Hallo' not in item['content']"

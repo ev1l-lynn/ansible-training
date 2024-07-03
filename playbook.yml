@@ -1,0 +1,7 @@
+---
+- name: Do initial stuff
+  ansible.builtin.import_playbook: playbook_init.yml
+
+- name: Deploy the web server
+  ansible.builtin.import_playbook: playbook_role.yml
+  

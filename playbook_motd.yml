@@ -1,0 +1,27 @@
+---
+- name: Deploy a custom motd
+  hosts: all
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Deploy a motd
+      ansible.builtin.copy:
+        content: |
+          Ansible motd
+          Dont modify files Ò_Ó
+          {{ motd_text }}
+        dest: /etc/motd.d/ansible
+        owner: root
+        group: root
+        mode: "0644"
+      when: ansible_facts['distribution'] == "CentOS"
+
+    - name: Deploy a motd
+      ansible.builtin.blockinfile:
+        block: |
+          Ansible motd
+          Dont modify files Ò_Ó
+          {{ motd_text }}
+        path: /etc/motd
+      when: ansible_facts['distribution'] == "Debian"    

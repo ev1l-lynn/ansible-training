@@ -1,0 +1,9 @@
+---
+# handlers file for webserver
+- name: Restart the web server
+  ansible.builtin.systemd:
+    service: httpd
+    state: restarted
+
+- name: Dummy debug tasks
+  ansible.builtin.debug:

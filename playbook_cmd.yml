@@ -1,0 +1,29 @@
+---
+- name: Play with command and shell
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Call a ls command
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/ls
+          - -l
+          - /home
+          - /home/student/a b
+      changed_when: false
+
+    - name: Call a shell command
+      ansible.builtin.shell: /usr/bin/ls -l /home "/home/student/a b" ; date
+      register: shell_out
+      changed_when: false
+
+    - name: Print out shell_out
+      ansible.builtin.debug:
+        var: shell_out
+        verbosity: 2
+
+    - name: Handle output
+      ansible.builtin.debug:
+        msg: Zeileninhalt ist {{ item }}
+      loop: "{{ shell_out['stdout_lines'] }}"

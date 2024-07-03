@@ -1,0 +1,20 @@
+---
+- name: Play with loop
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    user_list:
+      - name: susi
+        home: /home/susi
+      - name: peter
+        home: /home/peter
+      - name: hans
+        home: /home/hans
+
+  tasks:
+    - name: Print user names
+      ansible.builtin.debug:
+        msg: Username is {{ item['name'] }} with home {{ item['home'] }}
+      loop: "{{ user_list }}"
+      when: item['name'] != 'peter'

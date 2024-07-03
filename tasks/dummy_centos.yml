@@ -1,0 +1,8 @@
+---
+- name: Mein erster Task
+  ansible.builtin.debug:
+    msg: Erster Task centos
+
+- name: Mein zweiter Task
+  ansible.builtin.debug:
+    msg: Zweiter Task centos

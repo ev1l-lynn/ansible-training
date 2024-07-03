@@ -1,0 +1,33 @@
+---
+- name: Initialisierung des Servers
+  hosts: all
+  gather_facts: false
+  serial: 2
+  user: root
+
+  tasks:
+    - name: Install sudo
+      ansible.builtin.package:
+        name: sudo
+        state: present
+
+    - name: Create devops user
+      ansible.builtin.user:
+        name: devops
+        comment: Ansible user
+        state: present
+
+    - name: Add devops user to sudo
+      ansible.builtin.copy:
+        content: "devops ALL=(ALL) NOPASSWD: ALL"
+        dest: /etc/sudoers.d/ansible
+        mode: "0600"
+        owner: root
+        group: root
+        validate: /usr/sbin/visudo -csf %s
+
+    - name: Add public SSH key
+      ansible.posix.authorized_key:
+        user: devops
+        state: present
+        key: "{{ lookup('ansible.builtin.file', 'files/vm.pub') }}"

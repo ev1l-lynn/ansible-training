@@ -1,0 +1,16 @@
+---
+- name: Check if login and privilege escalation is working
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Check Server with ping
+      ansible.builtin.ping:
+        
+    - name: Check login
+      ansible.builtin.command: id
+
+    - name: Check privilege escalation
+      ansible.builtin.command: id
+      become: true
+      changed_when: false

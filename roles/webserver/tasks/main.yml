@@ -1,0 +1,36 @@
+---
+# tasks file for webserver
+- name: Install the packages
+  ansible.builtin.dnf:
+    name:
+      - httpd
+    state: latest
+
+- name: Deploy web application
+  ansible.builtin.copy:
+    content: "{{ webserver_content }}"
+    dest: /var/www/html/index.html
+    mode: "0644"
+    owner: root
+    group: root
+  notify:
+    - Dummy debug tasks
+    - Restart the web server
+
+- name: Dummy date
+  ansible.builtin.command: date
+  notify:
+    - Dummy debug tasks
+
+- name: Start and enable webserver
+  ansible.builtin.systemd:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: Open firewall port
+  ansible.posix.firewalld:
+    service: http
+    state: enabled
+    permanent: true
+    immediate: true

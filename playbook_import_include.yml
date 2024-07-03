@@ -1,0 +1,29 @@
+---
+- name: Play with import and include
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Just a task
+      ansible.builtin.debug:
+        msg: Just a task
+
+    - name: Import the dummy task list
+      ansible.builtin.import_tasks: tasks/dummy.yml
+
+    - name: Just another task
+      ansible.builtin.debug:
+        msg: Just another task
+
+    - name: Include the dummy task list
+      ansible.builtin.include_tasks: tasks/dummy.yml
+
+    - name: Include dummy task per distribution
+      ansible.builtin.include_tasks: "tasks/dummy_{{ ansible_facts['distribution'] | lower }}.yml"
+
+    - name: Loop with include
+      ansible.builtin.include_tasks: tasks/dummy.yml
+      loop:
+        - 1
+        - 2
+        - 3

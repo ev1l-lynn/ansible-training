@@ -1,0 +1,9 @@
+---
+- name: Play with vault
+  hosts: 10.0.1.1
+  gather_facts: false
+
+  tasks:
+    - name: Print the mysql password
+      ansible.builtin.debug:
+        msg: The mysql password is {{ mysql_password }}

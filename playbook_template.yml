@@ -1,0 +1,24 @@
+---
+- name: Play with Jinja2
+  hosts: web
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Deploy the motd variant 1
+      ansible.builtin.template:
+        src: templates/motd.j2
+        dest: /etc/motd.d/ansible_1
+        owner: root
+        group: root
+        mode: "0644"
+        setype: etc_t
+
+    - name: Deploy the motd variant 2
+      ansible.builtin.copy:
+        content: "{{ lookup('ansible.builtin.template', 'templates/motd.j2') }}"
+        dest: /etc/motd.d/ansible_2
+        owner: root
+        group: root
+        mode: "0644"
+        setype: etc_t

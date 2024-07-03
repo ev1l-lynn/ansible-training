@@ -1,0 +1,63 @@
+---
+- name: Deploy a web application
+  hosts: web
+  gather_facts: false
+  become: true
+  force_handlers: true
+
+  tasks:
+    - name: Install the packages
+      ansible.builtin.dnf:
+        name:
+          - httpd
+        state: latest
+
+    - name: Deploy web application
+      ansible.builtin.copy:
+        content: Hello World
+        dest: /var/www/html/index.html
+        mode: "0644"
+        owner: root
+        group: root
+      notify:
+        - Dummy debug tasks
+        - Restart the web server
+
+    - name: Dummy date
+      ansible.builtin.command: date
+      notify:
+        - Dummy debug tasks
+
+    - name: Start and enable webserver
+      ansible.builtin.systemd:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Open firewall port
+      ansible.posix.firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+
+  handlers:
+    - name: Restart the web server
+      ansible.builtin.systemd:
+        service: httpd
+        state: restarted
+
+    - name: Dummy debug tasks
+      ansible.builtin.debug:
+
+- name: Smoke test for web application
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: The smoke test
+      ansible.builtin.uri:
+        url: http://10.0.0.1/index.html
+        return_content: true
+        status_code:
+          - 200
