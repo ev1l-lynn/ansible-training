@@ -1,1 +1,1 @@
-# ✨ ansible-training ✨ ԅ(≖‿≖ԅ)
+# ✨ (╯°□°）╯︵ ┻━┻  ansible-training ✨ ԅ(≖‿≖ԅ)
